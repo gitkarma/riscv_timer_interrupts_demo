@@ -15,6 +15,17 @@
 # define REGBYTES 4
 #endif
 
+  .data
+  .align 6
+trap_table:
+#define BAD_TRAP_VECTOR 0
+  .word handle_misaligned_fetch
+  .word handle_illegal_instruction
+  .word handle_breakpoint
+  .word handle_misaligned_store
+  .word handle_interrupt
+  .word handle_machine_timer_interrupt
+
   .section ".text.init"
   .globl _start
 _start:

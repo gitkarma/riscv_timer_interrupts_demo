@@ -22,31 +22,31 @@ void dump_tf(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
   printf("pc %lx\n", epc);
 }
 
-static void handle_misaligned_fetch(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+void handle_misaligned_fetch(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
 {
   dump_tf(cause, epc, regs);
   printf("Misaligned instruction access!\n");
 }
 
-static void handle_illegal_instruction(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+void handle_illegal_instruction(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
 {
   dump_tf(cause, epc, regs);
   printf("An illegal instruction was executed!\n");
 }
 
-static void handle_breakpoint(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+void handle_breakpoint(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
 {
   dump_tf(cause, epc, regs);
   printf("Breakpoint!\n");
 }
 
-static void handle_misaligned_store(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+void handle_misaligned_store(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
 {
   dump_tf(cause, epc, regs);
   printf("Misaligned AMO!\n");
 }
 
-static void handle_interrupt(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+void handle_interrupt(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
 {
   printf("This was an interruption .. clearing SIP_S{E|S|T}IP and getting back to code!\n");
   clear_csr(mip, MIP_MSIP | MIP_MEIP);// | MIP_MTIP | MIP_MEIP);
@@ -57,7 +57,7 @@ void set_timer_max(){
     MTIMECMP[0] = (uint64_t)-1ULL;
 }
 
-static void handle_machine_timer_interrupt(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+void handle_machine_timer_interrupt(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
 {
   //write_csr(mip, 0);         // Clearing IP (interrupt pending)
   //clear_csr(mie, MIP_MTIP);         // Clearing IP (interrupt pending)
