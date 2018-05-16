@@ -1,9 +1,9 @@
+#/*======================================================================*/
+#/* TIMA LABORATORY                                                      */
+#/*======================================================================*/
+
 #include "encoding.h"
-
-#define MAX_HARTS         1
-
-#Defined directly in the Makefile by the compiler
-#define SPIKE_SIMULATION  1
+#include "mtrap.h"
 
 #if __riscv_xlen == 64
 # define LREG ld
@@ -14,17 +14,6 @@
 # define SREG sw
 # define REGBYTES 4
 #endif
-
-  .data
-  .align 6
-trap_table:
-#define BAD_TRAP_VECTOR 0
-  .word handle_misaligned_fetch
-  .word handle_illegal_instruction
-  .word handle_breakpoint
-  .word handle_misaligned_store
-  .word handle_interrupt
-  .word handle_machine_timer_interrupt
 
   .section ".text.init"
   .globl _start
@@ -160,21 +149,6 @@ _disable_harts:
   sll sp, sp, STKSHIFT
   add sp, sp, tp
 
-
-  # Only for spike simulation:
-  # Each core is simulated for 5000 cycles before switching to the next.
-  # Therefore wait 5000 cycles to guarantee that every core was simulated
-  # at least once 
-  
-#if defined(SPIKE_SIMULATION)
-  rdcycle t0
-  li      t1, 5000
-  add     t1, t0, t1
-_count_cycle_:      rdcycle t0
-  blt     t0, t1, _count_cycle_
-#endif
-
-  
   # Re-Read the mhartid + pass two args to _init
   csrr    a0, mhartid
   lw      a1, n_harts
@@ -217,11 +191,72 @@ trap_entry:
   SREG x31, 31*REGBYTES(sp)
 
   csrr a0, mcause
+  # // if it's an exception go to exception_handler
+  bgez a0, 1f
+
+  # // else discard the MSB and decode the rest
+  sll a0, a0, 1
+
+  # Is it a machine timer interrupt?
+  li a1, IRQ_M_TIMER*2
+  # // else if not a timer interrupt go to forward 1:
+  bne a1, a0, 1f
+
+machine_timer_interrupt_handler:
+  # Yes.  Simply clear MTIP and write -1ULL to mtimecmp
+  li a1, MIP_MTIP
+  csrc mie, a1
+  li a1, -1ULL
+  # we write mtimecmp address to t0
+  li t0, MTIMECMP_BASE
+  # then write -1LL to mtimecmp
+  SREG a1, (t0)
+  j return_from_trap_handler
+
+1:
+  # Is it an IPI?
+  li a0, IRQ_M_SOFT * 2
+  bne a0, a1, general_trap_handler
+
+machine_software_interrupt_handler:
+  # Yes.  First, clear the MIPI bit.
+  LREG a0, MENTRY_IPI_OFFSET(sp)
+  sw x0, (a0)
+  fence
+
+  # Now, decode the cause(s).
+#ifdef __riscv_atomic
+  addi a0, sp, MENTRY_IPI_PENDING_OFFSET
+  amoswap.w a0, x0, (a0)
+#else
+  lw a0, MENTRY_IPI_PENDING_OFFSET(sp)
+  sw x0, MENTRY_IPI_PENDING_OFFSET(sp)
+#endif
+  and a1, a0, IPI_SOFT
+  beqz a1, 1f
+  csrs mip, MIP_SSIP
+1:
+  andi a1, a0, IPI_FENCE_I
+  beqz a1, 1f
+  fence.i
+1:
+  andi a1, a0, IPI_SFENCE_VMA
+  beqz a1, 1f
+  sfence.vma
+1:
+  andi a1, a0, IPI_HALT
+  beqz a1, general_trap_handler
+  wfi
+  j 1b
+
+general_trap_handler:
+  csrr a0, mcause
   csrr a1, mepc
   mv a2, sp
   jal handle_trap
   csrw mepc, a0
 
+return_from_trap_handler:
   # Remain in M-mode after mret
   li t0, MSTATUS_MPP
   csrs mstatus, t0

@@ -39,7 +39,6 @@ const static char* interrupts_txt[] = {
   };
 
 void dump_tf(uintptr_t cause, uintptr_t epc, uintptr_t regs[32]);
-//void handle_interrupt(uintptr_t cause, uintptr_t epc, uintptr_t regs[32]);
 void handle_trap(uintptr_t cause, uintptr_t epc, uintptr_t regs[32]);
 
 

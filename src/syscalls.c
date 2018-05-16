@@ -1,3 +1,6 @@
+/*======================================================================*/
+/* TIMA LABORATORY                                                      */
+/*======================================================================*/
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
@@ -61,13 +64,6 @@ void __attribute__((noreturn)) tohost_exit(uintptr_t code)
   while (1);
 }
 
-/*
-uintptr_t __attribute__((weak)) handle_trap(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
-{
-  tohost_exit(1337);
-}
-*/
-
 void exit(int code)
 {
   tohost_exit(code);
@@ -114,18 +110,6 @@ void _init(int cid, int nc)
 
   thread_entry(cid, nc);
 
-  // only single-threaded programs should ever get here.
-
-/*
-  // Used for performance statistics
-  char buf[NUM_COUNTERS * 32] __attribute__((aligned(64)));
-  char* pbuf = buf;
-  for (int i = 0; i < NUM_COUNTERS; i++)
-    if (counters[i])
-      pbuf += sprintf(pbuf, "%s = %d\n", counter_names[i], counters[i]);
-  if (pbuf != buf)
-    printstr(buf);
-*/
   exit( main(0, 0));
 }
 

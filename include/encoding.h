@@ -975,21 +975,6 @@
 #define CAUSE_LOAD_PAGE_FAULT 0xd
 #define CAUSE_STORE_PAGE_FAULT 0xf
 
-/*
-#define CAUSE_USER_SOFTWARE_INTERRUPT ((1 << __riscv_xlen) | 0)
-#define CAUSE_SUPERVISOR_SOFTWARE_INTERRUPT ((1 << __riscv_xlen) | 1)
-//#define CAUSE_HYPERVISOR_SOFTWARE_INTERRUPT ((1 << __riscv_xlen) | 1) // Reserved in spec
-#define CAUSE_MACHINE_SOFTWARE_INTERRUPT ((1 << __riscv_xlen) | 3)
-#define CAUSE_USER_TIMER_INTERRUPT ((1 << __riscv_xlen) | 4)
-#define CAUSE_SUPERVISOR_TIMER_INTERRUPT ((1 << __riscv_xlen) | 5)
-//#define CAUSE_HYPERVISOR_TIMER_INTERRUPT ((1 << __riscv_xlen) | 6) // Reserved in spec
-#define CAUSE_MACHINE_TIMER_INTERRUPT ((1 << __riscv_xlen) | 7)
-#define CAUSE_USER_EXTERNAL_INTERRUPT ((1 << __riscv_xlen) | 8)
-#define CAUSE_SUPERVISOR_EXTERNAL_INTERRUPT ((1 << __riscv_xlen) | 9)
-//#define CAUSE_HYPERVISOR_EXTERNAL_INTERRUPT ((1 << __riscv_xlen) | 8) // Reserved in spec
-#define CAUSE_MACHINE_EXTERNAL_INTERRUPT ((1 << __riscv_xlen) | 11)
-*/
-
 #define CAUSE_USER_SOFTWARE_INTERRUPT 0
 #define CAUSE_SUPERVISOR_SOFTWARE_INTERRUPT 1
 #define CAUSE_HYPERVISOR_SOFTWARE_INTERRUPT 2
