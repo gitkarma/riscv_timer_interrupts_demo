@@ -1,1 +1,4 @@
-install: ./test_script.sh
+language: bash
+
+script:
+  - bash test_script.sh
