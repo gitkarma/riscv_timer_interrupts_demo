@@ -1,14 +1,10 @@
-<<<<<<< HEAD
 #/*======================================================================*/
 #/* TIMA LABORATORY                                                      */
 #/*======================================================================*/
-Projet 1
-
+Projet 1   [![Build Status](https://travis-ci.org/noureddine-as/riscv_timer_interrupts_demo.svg?branch=travis-try)](https://travis-ci.org/noureddine-as/riscv_timer_interrupts_demo)
 =======
 # riscv_timer_interrupts_demo
-
 A baremetal application illustrating the use of interrupts in RISC-V based systems.
-
 This assumes that the RISC-V toolchain is already installed an that the RISCV environment variable is set.
 
 to build the app:
